@@ -14,7 +14,7 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-application     cyclicBuoyantFlow;
+application     pisoFoam;
 
 startFrom       startTime;
 

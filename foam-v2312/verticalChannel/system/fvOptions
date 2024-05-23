@@ -1,0 +1,90 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2312                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      fvOptions;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+BoussinesqSource
+{
+    type            vectorCodedSource;
+    selectionMode   all;
+    fields          ( U );
+    name            BoussinesqSource;
+
+    codeInclude
+    #{
+
+    #};
+
+    codeCorrect
+    #{
+
+        Info<< "CodeCorrect" << endl << "\n" ; 
+    
+    #};
+
+    codeConstrain
+    #{
+    
+        Info<< "CodeConstrain" << endl << "\n" ; 
+
+    #};
+
+    codeAddSup
+    #{
+        Info << "Adding Boussinesq buoyancy source term" << endl;
+
+        const dimensionedScalar T_w
+        (
+            "T_w",
+            dimensionSet(0, 0, 0, 1, 0, 0, 0),
+            10.0
+        );
+
+        const dimensionedScalar T_ref
+        (
+            "T_ref",
+            dimensionSet(0, 0, 0, 1, 0, 0, 0),
+            0.0
+        );
+
+        const dimensionedScalar beta
+        (
+            "beta",
+            dimensionSet(0, 0, 0, -1, 0, 0, 0),
+            0.003
+        );
+
+        const dimensionedVector g
+        (
+            "g",
+            dimensionSet(0, 1, -2, 0, 0, 0, 0),
+            vector(0, -9.81, 0)
+        );
+
+        const scalarField& V = mesh_.V();
+
+        vectorField& USource = eqn.source();
+
+        forAll(V, i)
+        {
+            USource[i] += g*beta*(T_w - T_ref)*V[i];
+        }
+
+        Info << "USource = " << eqn.dimensions() << endl;
+    #};
+}
+
+
+// ************************************************************************* //
