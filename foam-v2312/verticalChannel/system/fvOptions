@@ -75,11 +75,9 @@ BoussinesqSource
 
         const scalarField& V = mesh_.V();
 
-        vectorField& USource = eqn.source();
-
         forAll(V, i)
         {
-            USource[i] += g*beta*(T_w - T_ref)*V[i];
+        //     eqn.source()[i] += g*beta*(T_w - T_ref)*V[i];
         }
 
         Info << "USource = " << eqn.dimensions() << endl;
