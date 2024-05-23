@@ -24,21 +24,16 @@ BoussinesqSource
 
     codeInclude
     #{
-
     #};
 
     codeCorrect
     #{
-
-        Info<< "CodeCorrect" << endl << "\n" ; 
-    
+        Info<< "CodeCorrect" << endl << "\n";
     #};
 
     codeConstrain
     #{
-    
-        Info<< "CodeConstrain" << endl << "\n" ; 
-
+        Info<< "CodeConstrain" << endl << "\n";
     #};
 
     codeAddSup
@@ -77,12 +72,11 @@ BoussinesqSource
 
         forAll(V, i)
         {
-        //     eqn.source()[i] += g*beta*(T_w - T_ref)*V[i];
+            eqn.source()[i] += g.value()*beta.value()*(T_w.value() - T_ref.value())*V[i];
         }
 
         Info << "USource = " << eqn.dimensions() << endl;
     #};
 }
-
 
 // ************************************************************************* //
