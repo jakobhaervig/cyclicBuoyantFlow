@@ -77,7 +77,13 @@ functions
                 gSum(vel.boundaryField()[patchID].component(1)*mesh().magSf().boundaryField()[patchID])/gSum(mesh().magSf().boundaryField()[patchID])
             );
               
-            Info << "psi: " << psi.value() << endl;
+            if (Pstream::myProcNo() == 0)
+            {
+                std::ofstream out;
+                out.precision(8);
+                out.open("psi", std::ios::app);
+                out <<  mesh().time().timeName() << " " << psi.value() << "\n";
+            }
         #};
     }
 }
