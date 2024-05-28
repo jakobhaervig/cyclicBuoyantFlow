@@ -16,23 +16,23 @@ FoamFile
 
 scale 1;
 
-channel_depth 0.1;
-channel_length 5; 
-channel_width 1; 
+s 0.1;
+y 5; 
+b 1; 
 
 n 3; 
 a 0.1; // #0.08 0.06 0.04 0.02 // In meter.
 phi 90; //in degrees 0->360
 
-L #eval #{$channel_length/$n#}; //  #5/3 5/4 5/5 5/6 5/7 //must be a whole period compared to the length of the channel.
+l #eval #{$y/$n#}; //  #5/3 5/4 5/5 5/6 5/7 //must be a whole period compared to the length of the channel.
 
     
 cell_x 112;
 cell_y 560;
 cell_z 1;
 
-fix #eval #{$a*sin((0+($L)/4)*degToRad(180)*(2/($L)))#};
-fix2 #eval #{$channel_width+$a*sin((($channel_length+($L)/4)*degToRad(180)*(2/($L)))+degToRad($phi))#};
+fix #eval #{$a*sin((0+($l)/4)*degToRad(180)*(2/($l)))#};
+fix2 #eval #{$b+$a*sin((($y+($l)/4)*degToRad(180)*(2/($l)))+degToRad($phi))#};
 
 
 vertices
@@ -40,12 +40,12 @@ vertices
     //block1
     ($fix 0 0) 								//0
     ($fix2 0 0)  							//1
-    ($fix $channel_length 0) 				//2
-    ($fix2 $channel_length 0) 				//3
-    ($fix 0 $channel_depth) 				//4
-    ($fix2 0 $channel_depth) 				//5
-    ($fix $channel_length $channel_depth) 	//6
-    ($fix2 $channel_length $channel_depth) 	//7
+    ($fix $y 0) 				//2
+    ($fix2 $y 0) 				//3
+    ($fix 0 $s) 				//4
+    ($fix2 0 $s) 				//5
+    ($fix $y $s) 	//6
+    ($fix2 $y $s) 	//7
     
 );
 
@@ -72,9 +72,9 @@ edges
     code
     #{
         pointField points(120);
-		double length = $channel_length;
+		double length = $y;
 		double amp = $a;
-		double period = $L;
+		double period = $l;
 		double sz = points.size();
 		double thisy = length/sz;
 		double step = 0;
@@ -102,9 +102,9 @@ edges
     code
     #{
         pointField points(120);
-		double length = $channel_length;
+		double length = $y;
 		double amp = $a;
-		double period = $L;
+		double period = $l;
 		double sz = points.size();
 		double thisy = length/sz;
 		double step = 0;
@@ -112,7 +112,7 @@ edges
 		for (label i = 0; i < sz; i++)
         {
 			step = i*thisy;
-			points[i] = point(amp*sin((step+(period)/4)*degToRad(180)*(2/(period))), step, $channel_depth);
+			points[i] = point(amp*sin((step+(period)/4)*degToRad(180)*(2/(period))), step, $s);
 			
         }
 
@@ -131,11 +131,11 @@ edges
     code
     #{
         pointField points(120);
-		double length = $channel_length;
-		double width = $channel_width;
+		double length = $y;
+		double width = $b;
 		double phaseShift = $phi;
 		double amp = $a;
-		double period = $L;
+		double period = $l;
 		double sz = points.size();
 		double thisy = length/sz;
 		double step = 0;
@@ -162,11 +162,11 @@ edges
     code
     #{
         pointField points(120);
-		double length = $channel_length;
-		double width = $channel_width;
+		double length = $y;
+		double width = $b;
 		double phaseShift = $phi;
 		double amp = $a;
-		double period = $L;
+		double period = $l;
 		double sz = points.size();
 		double thisy = length/sz;
 		double step = 0;
@@ -174,7 +174,7 @@ edges
 		for (label i = 0; i < sz; i++)
         {
 			step = i*thisy;
-			points[i] = point((amp*sin(((step+(period)/4)*degToRad(180)*(2/(period)))+degToRad(phaseShift)))+width, step, $channel_depth);
+			points[i] = point((amp*sin(((step+(period)/4)*degToRad(180)*(2/(period)))+degToRad(phaseShift)))+width, step, $s);
 			
         }
 
