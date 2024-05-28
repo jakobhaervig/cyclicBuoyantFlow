@@ -44,7 +44,7 @@ BoussinesqSource
         (
             "T_w",
             dimensionSet(0, 0, 0, 1, 0, 0, 0),
-            10.0
+            1.0
         );
 
         const dimensionedScalar T_ref
@@ -65,7 +65,7 @@ BoussinesqSource
         (
             "g",
             dimensionSet(0, 1, -2, 0, 0, 0, 0),
-            vector(0, -9.81, 0)
+            vector(0, -33.3333333, 0)
         );
 
         const scalarField& V = mesh_.V();

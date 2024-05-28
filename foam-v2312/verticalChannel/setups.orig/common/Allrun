@@ -6,6 +6,8 @@ cd "${0%/*}" || exit                                # Run from this directory
 
 restore0Dir
 
+./Allrun-pre
+
 runApplication blockMesh
 
 runApplication $(getApplication)

@@ -21,7 +21,7 @@ y 5;
 b 1; 
 
 n 3; 
-a 0.1; // #0.08 0.06 0.04 0.02 // In meter.
+a 0; // #0.08 0.06 0.04 0.02 // In meter.
 phi 90; //in degrees 0->360
 
 l #eval #{$y/$n#}; //  #5/3 5/4 5/5 5/6 5/7 //must be a whole period compared to the length of the channel.
