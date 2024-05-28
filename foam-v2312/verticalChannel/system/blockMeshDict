@@ -16,18 +16,20 @@ FoamFile
 
 scale 1;
 
+channel_depth 0.1;
+channel_length 5; 
+channel_width 1; 
 
-L #eval #{5/3#}; //  #5/3 5/4 5/5 5/6 5/7 //must be a whole period compared to the length of the channel.
-a 0.08; // #0.08 0.06 0.04 0.02 // In meter.
-phi 75; //in degrees 0->360
+n 3; 
+a 0.1; // #0.08 0.06 0.04 0.02 // In meter.
+phi 90; //in degrees 0->360
+
+L #eval #{$channel_length/$n#}; //  #5/3 5/4 5/5 5/6 5/7 //must be a whole period compared to the length of the channel.
+
     
 cell_x 112;
 cell_y 560;
 cell_z 1;
-
-channel_depth 0.1;
-channel_length 5; 
-channel_width 1; 
 
 fix #eval #{$a*sin((0+($L)/4)*degToRad(180)*(2/($L)))#};
 fix2 #eval #{$channel_width+$a*sin((($channel_length+($L)/4)*degToRad(180)*(2/($L)))+degToRad($phi))#};
