@@ -79,9 +79,10 @@ run_setup() {
 
         if [ "$parallel" = true ]
         then
-            ( cd "$dirResult" && ./Allrun-parallel )
+            ./$dirResult/Allrun-parallel
         else
-            ( cd "$dirResult" && ./Allrun )
+            cd $dirResult
+            ./Allrun
         fi
 
     else
