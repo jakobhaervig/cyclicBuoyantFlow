@@ -75,7 +75,6 @@ BoussinesqSource
             eqn.source()[i] += g.value()*beta.value()*(T_w.value() - T_ref.value())*V[i];
         }
 
-        Info << "USource = " << eqn.dimensions() << endl;
     #};
 }
 
