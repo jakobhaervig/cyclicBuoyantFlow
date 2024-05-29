@@ -24,7 +24,7 @@ n 3;
 a 0; // #0.08 0.06 0.04 0.02 // In meter.
 phi 90; //in degrees 0->360
 
-l #eval #{$y/$n#}; //  #5/3 5/4 5/5 5/6 5/7 //must be a whole period compared to the length of the channel.
+l #eval #{$L/$n#}; //  #5/3 5/4 5/5 5/6 5/7 //must be a whole period compared to the length of the channel.
 
     
 cell_x 112;
@@ -32,7 +32,7 @@ cell_y 560;
 cell_z 1;
 
 fix #eval #{$a*sin((0+($l)/4)*degToRad(180)*(2/($l)))#};
-fix2 #eval #{$b+$a*sin((($y+($l)/4)*degToRad(180)*(2/($l)))+degToRad($phi))#};
+fix2 #eval #{$b+$a*sin((($L+($l)/4)*degToRad(180)*(2/($l)))+degToRad($phi))#};
 
 
 vertices
@@ -40,12 +40,12 @@ vertices
     //block1
     ($fix 0 0) 								//0
     ($fix2 0 0)  							//1
-    ($fix $y 0) 				//2
-    ($fix2 $y 0) 				//3
+    ($fix $L 0) 				//2
+    ($fix2 $L 0) 				//3
     ($fix 0 $s) 				//4
     ($fix2 0 $s) 				//5
-    ($fix $y $s) 	//6
-    ($fix2 $y $s) 	//7
+    ($fix $L $s) 	//6
+    ($fix2 $L $s) 	//7
     
 );
 
@@ -72,7 +72,7 @@ edges
     code
     #{
         pointField points(120);
-		double length = $y;
+		double length = $L;
 		double amp = $a;
 		double period = $l;
 		double sz = points.size();
@@ -102,7 +102,7 @@ edges
     code
     #{
         pointField points(120);
-		double length = $y;
+		double length = $L;
 		double amp = $a;
 		double period = $l;
 		double sz = points.size();
@@ -131,7 +131,7 @@ edges
     code
     #{
         pointField points(120);
-		double length = $y;
+		double length = $L;
 		double width = $b;
 		double phaseShift = $phi;
 		double amp = $a;
@@ -162,7 +162,7 @@ edges
     code
     #{
         pointField points(120);
-		double length = $y;
+		double length = $L;
 		double width = $b;
 		double phaseShift = $phi;
 		double amp = $a;
