@@ -1,20 +1,19 @@
-#!/bin/sh
+#!/bin/bash
 cd "${0%/*}" || exit                                # Run from this directory
 . ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions        # Tutorial run functions
 #------------------------------------------------------------------------------
 
 # settings
-
     # operand setups
     setups="
     wavy
     "
 
-    # flag to enable computations
-    run=true
-
     # flag to enable computations in parallel mode
-    parallel=true
+    parallel=false
+
+    # define variables from the parameters file
+    parameterFilePrefix="parameters"
 
 #------------------------------------------------------------------------------
 
@@ -29,70 +28,56 @@ dry_run_setup() {
 
     [ $# -eq 0 ] && { echo "Usage error: $0"; exit 1; }
 
+    # Check if the parameters file exists
+    if [[ ! -f ${parameterFilePrefix}_$1 ]]; then
+    echo "Error: File "${parameterFilePrefix}_$1" not found!"
+    exit 1
+    fi
+
+    # Read the first line (header) to get variable names
+    header=$(head -n 1 ${parameterFilePrefix}_$1 | sed 's/#//')
+    IFS=' ' read -r -a var_names <<< "$header"
+
+    # Read the rest of the file to get values, ensuring we process the last line
+    {
+    tail -n +2 ${parameterFilePrefix}_$1
+    echo # Add an extra newline to ensure the last line is processed
+    } | while IFS=' ' read -r -a var_values; do
+    # Define variables dynamically
+    for i in "${!var_names[@]}"; do
+        declare "${var_names[i]}"="${var_values[i]}"
+    done
+
     setup="$1"
+    for i in "${!var_names[@]}"; do
+        setup=${setup}"_${var_names[i]}${var_values[i]}"
+    done
     dirSetup="setups/$setup"
-    dirSetupOrig="setups.orig/$setup"
+    dirSetupOrig="setups.orig/$1"
     dirOrig="$dirSetupOrig/0.orig"
     dirConstant="$dirSetupOrig/constant"
     dirSystem="$dirSetupOrig/system"
 
-    printf "\n# Create the setup: %s\n" "$setup"
-
     if [ ! -d "$dirSetup" ]
     then
+        printf "# Create the setup: %s\n" "$setup"
         mkdir -p "$dirSetup"
+        cp -aRfLp "setups.orig/common/." "$dirSetup/."
+        [ -d "$dirOrig" ] && cp -aRfLp "$dirOrig/." "$dirSetup/0.orig"
+        [ -d "$dirConstant" ] && cp -aRfLp "$dirConstant/." "$dirSetup/constant"
+        [ -d "$dirSystem" ] && cp -aRfLp "$dirSystem/." "$dirSetup/system"
+        chmod 755 -R ${dirSetup}/Allrun*
 
-        cp -aRfL "setups.orig/common/." "$dirSetup"
-        cp -afL "$dirSetupOrig"/All* "$dirSetup" 2>/dev/null || :
-        [ -d "$dirOrig" ] && cp -aRfL "$dirOrig/." "$dirSetup/0.orig"
-        [ -d "$dirConstant" ] && cp -aRfL "$dirConstant/." "$dirSetup/constant"
-        [ -d "$dirSystem" ] && cp -aRfL "$dirSystem/." "$dirSetup/system"
-    else
-        printf "\n      # Directory %s already exists\n" "$dirSetup"
-        printf "      # Skipping the creation of a new setup\n"
-    fi
-}
-
-#######################################
-# Run the given setup
-# Arguments:
-#    $1 = Path to the setup to run
-# Outputs:
-#    Writes info to stdout
-#######################################
-run_setup() {
-
-    [ $# -eq 0 ] && { echo "Usage error: $0"; exit 1; }
-
-    setup="$1"
-    dirSetup="setups/$setup"
-    dirResult="results/$setup"
-
-    dry_run_setup "$setup"
-    [ -d results ] || mkdir -p results
-
-    printf "\n# Run the setup: %s\n\n" "$setup"
-
-    if [ ! -d "$dirResult" ]
-    then
-        cp -Rf "$dirSetup" "$dirResult"
-
-        if [ "$parallel" = true ]
-        then
-            ./$dirResult/Allrun-parallel
-        else
-            cd $dirResult
-            ./Allrun
-        fi
+        for i in "${!var_names[@]}"; do
+            find $dirSetup -type f -exec sed -i "s/{{${var_names[i]}}}/${var_values[i]}/g" {} +
+        done
 
     else
-        printf "      # Directory %s already exists\n" "$dirResult"
-        printf "      # Skipping the computation of the given setup\n"
+        printf "# Directory %s already exists - skipping!\n" "$dirSetup"
     fi
+    done
+    exit
 }
-
-
-#------------------------------------------------------------------------------
 
 for setup in $setups
 do
@@ -105,12 +90,7 @@ do
         continue
     fi
 
-    if [ "$run" = true ]
-    then
-        run_setup "$setup"
-    else
-        dry_run_setup "$setup"
-    fi
+    dry_run_setup "$setup"
 done
 
 #------------------------------------------------------------------------------
