@@ -40,12 +40,11 @@ BoussinesqSource
     #{
         Info << "Adding Boussinesq buoyancy source term" << endl;
 
-        const dimensionedScalar T_w
-        (
-            "T_w",
-            dimensionSet(0, 0, 0, 1, 0, 0, 0),
-            1.0
-        );
+       // const dimensionedScalar T_w
+        //(
+        //  dimensionSet(0, 0, 0, 1, 0, 0, 0),
+        //    1.0
+        //);
 
         const dimensionedScalar T_ref
         (
@@ -65,16 +64,22 @@ BoussinesqSource
         (
             "g",
             dimensionSet(0, 1, -2, 0, 0, 0, 0),
-            vector(0, -33.3333333, 0)
+            vector(0, -2380.95, 0)
         );
 
         const scalarField& V = mesh_.V();
 
+        //not sure, that is makes sence to couple it in this way.
+        const volScalarField& Temp = mesh_.lookupObject<volScalarField>("T");
+        const label wallsID = mesh_.boundaryMesh().findPatchID("walls");
+        const scalarField& T_w = Temp.boundaryField()[wallsID];
+
         forAll(V, i)
         {
-            eqn.source()[i] += g.value()*beta.value()*(T_w.value() - T_ref.value())*V[i];
+            eqn.source()[i] += g.value()*beta.value()*(average(T_w) - Temp[i])*V[i];
         }
 
+        //Info << "USource = " << eqn.dimensions() << endl;
     #};
 }
 
