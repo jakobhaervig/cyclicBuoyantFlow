@@ -30,7 +30,7 @@ expressions
         
         expression
         #{
-            vector(0, (-1*(pow(pos().x()/$[(scalar)constants.width],2)/2)+(2+1)*((pos().x())/6)) * $[(scalar)constants.Gr] * $[(scalar)constants.nu], 0)
+            vector((((round(pos().y()) % 2)*2)-1)*10, ((-1*(pow(pos().x()/$[(scalar)constants.width],2)/2)+(2+1)*((pos().x())/6)) * $[(scalar)constants.Gr] * $[(scalar)constants.nu]) ,0)
         #};
     }
 );
