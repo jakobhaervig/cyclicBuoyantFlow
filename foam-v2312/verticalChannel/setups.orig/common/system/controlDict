@@ -14,9 +14,9 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-application     pisoFoam;
+application     pimpleFoam;
 
-startFrom       startTime;
+startFrom       latestTime;
 
 startTime       0;
 
@@ -26,11 +26,11 @@ endTime         10000;
 
 deltaT          0.01;
 
-writeControl    timeStep;
+writeControl    adjustableRunTime;
 
-writeInterval   1000;
+writeInterval   0.01;
 
-purgeWrite      0;
+//purgeWrite      50;
 
 writeFormat     ascii;
 
@@ -44,9 +44,9 @@ timePrecision   6;
 
 runTimeModifiable true;
 
-adjustTimeStep  no;
+adjustTimeStep  yes;
 
-maxCo           0.5;
+maxCo           1;
 
 libs
 (
@@ -86,6 +86,83 @@ functions
             }
         #};
     }
+
+Tfield
+{
+    type            scalarTransport;
+    libs            ("libsolverFunctionObjects.so");
+    writeControl    $writeControl;
+    writeInterval   $writeInterval;
+
+
+    // Optional entries
+
+    // Name of scalar field to transport, default = 's'
+    field           T;
+
+    // Name of flux field, default = 'phi'
+    phi             phi;
+
+    // Name of density field for compressible cases, default = 'rho'
+    rho             rho;
+
+    // Name of phase field to constrain scalar to, default = 'none'
+    phase           none;
+
+    // Set the scalar to zero on start/re-start
+    resetOnStartUp  no;
+
+    // Name of field to use when looking up schemes from fvSchemes
+    // default = <field>
+    schemesField    U;
+
+
+    // Diffusivity
+
+    // Fixed value diffusivity
+    D               0.001;
+
+    // Name of field to use as diffusivity, default = 'none'
+    nut             none;
+
+    // Run-time selectable sources
+    fvOptions
+    {
+        Tcorrect
+        {
+            type            scalarCodedSource;
+            selectionMode   all;
+            fields          ( T );
+            name            Tcorrect;
+
+            codeInclude
+            #{
+            #};
+
+            codeCorrect
+            #{
+                Info<< "CodeCorrect" << endl << "\n";
+                const scalarField& V = mesh_.V();
+                //not sure, that is makes sence to couple it in this way.
+                const volScalarField& Temp = mesh_.lookupObject<volScalarField>("T");
+                const scalar Tb= Temp.weightedAverage(V);
+                const scalar Tset = 2;
+                const scalar frac = Tset/Tb;
+                T = T*1; //eqn.correct(frac);
+            #};
+
+            codeConstrain
+            #{
+                Info<< "CodeConstrain" << endl << "\n";
+            #};
+
+            codeAddSup
+            #{
+                Info << "not adding a Tsource" << endl;
+            #};
+        }
+    }
+}
 }
 
 // ************************************************************************* //
