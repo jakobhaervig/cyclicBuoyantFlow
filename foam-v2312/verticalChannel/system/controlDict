@@ -142,13 +142,14 @@ Tfield
             codeCorrect
             #{
                 Info<< "CodeCorrect" << endl << "\n";
-                const scalarField& V = mesh_.V();
+                //const scalarField& V = mesh().V();
                 //not sure, that is makes sence to couple it in this way.
-                const volScalarField& Temp = mesh_.lookupObject<volScalarField>("T");
-                const scalar Tb= Temp.weightedAverage(V);
+                //const volScalarField& Temp = mesh().lookupObject<volScalarField>("T");
+                //const scalar Tb= Temp.weightedAverage(V);
                 const scalar Tset = 2;
-                const scalar frac = Tset/Tb;
-                T = T*1; //eqn.correct(frac);
+                const scalar frac = Tset;
+
+                //T.correct();
             #};
 
             codeConstrain
