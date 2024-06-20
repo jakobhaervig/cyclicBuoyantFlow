@@ -30,7 +30,7 @@ writeControl    adjustableRunTime;
 
 writeInterval   0.01;
 
-//purgeWrite      50;
+purgeWrite      5;
 
 writeFormat     ascii;
 
@@ -141,21 +141,36 @@ Tfield
 
             codeCorrect
             #{
-                Info<< "CodeCorrect" << endl << "\n";
-                //const scalarField& V = mesh().V();
-                //not sure, that is makes sence to couple it in this way.
-                //const volScalarField& Temp = mesh().lookupObject<volScalarField>("T");
-                //const scalar Tb= Temp.weightedAverage(V);
-                const scalar Tset = 2;
-                const scalar frac = Tset;
-
-                //T.correct();
             #};
 
             codeConstrain
             #{
-                Info<< "CodeConstrain" << endl << "\n";
+                Info<< "Correcting Temp equaion" << endl << "\n";
+                const scalarField& V = mesh().V();
+                volScalarField T = mesh().lookupObject<volScalarField>("T");
+                
+
+                const scalar Tb = gSum(T*V)/gSum(V);
+
+                Info<< "first Tb:" << gSum(T*V)/gSum(V) << endl;
+
+                const scalar Tset = 2;
+                const scalar frac = Tset/Tb;
+
+                
+                forAll(T, cellI)
+                {
+                    eqn.source()[cellI] += ((frac)*T[cellI]-T[cellI]); // Example adjustment
+                }
+
+                Info<< "second Tb:" << gSum(T*V)/gSum(V) << endl;
+                //T.correct();
             #};
+
+            /*codeConstrain
+            #{
+                Info<< "CodeConstrain in T" << endl << "\n";
+            #};*/
 
             codeAddSup
             #{
