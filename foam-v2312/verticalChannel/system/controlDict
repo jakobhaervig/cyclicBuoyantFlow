@@ -28,7 +28,7 @@ deltaT          0.01;
 
 writeControl    adjustableRunTime;
 
-writeInterval   0.01;
+writeInterval   1;
 
 purgeWrite      5;
 
@@ -145,7 +145,7 @@ Tfield
 
             codeConstrain
             #{
-                Info<< "Correcting Temp equaion" << endl << "\n";
+                Info<< "rescaling Teqn" << endl << "\n";
                 const scalarField& V = mesh().V();
                 volScalarField T = mesh().lookupObject<volScalarField>("T");
                 
