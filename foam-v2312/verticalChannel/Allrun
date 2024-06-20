@@ -1,96 +1,15 @@
-#!/bin/bash
+#!/bin/sh
 cd "${0%/*}" || exit                                # Run from this directory
 . ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions        # Tutorial run functions
-#------------------------------------------------------------------------------
-
-# settings
-    # operand setups
-    setups="
-    wavy
-    "
-
-    # flag to enable computations in parallel mode
-    parallel=false
-
-    # define variables from the parameters file
-    parameterFilePrefix="parameters"
 
 #------------------------------------------------------------------------------
 
-#######################################
-# Create the given setup
-# Arguments:
-#    $1 = Path to create the setup
-# Outputs:
-#    Writes info to stdout
-#######################################
-dry_run_setup() {
+restore0Dir
 
-    [ $# -eq 0 ] && { echo "Usage error: $0"; exit 1; }
+./Allrun-pre
 
-    # Check if the parameters file exists
-    if [[ ! -f ${parameterFilePrefix}_$1 ]]; then
-    echo "Error: File "${parameterFilePrefix}_$1" not found!"
-    exit 1
-    fi
+runApplication blockMesh
 
-    # Read the first line (header) to get variable names
-    header=$(head -n 1 ${parameterFilePrefix}_$1 | sed 's/#//')
-    IFS=' ' read -r -a var_names <<< "$header"
-
-    # Read the rest of the file to get values, ensuring we process the last line
-    {
-    tail -n +2 ${parameterFilePrefix}_$1
-    echo # Add an extra newline to ensure the last line is processed
-    } | while IFS=' ' read -r -a var_values; do
-    # Define variables dynamically
-    for i in "${!var_names[@]}"; do
-        declare "${var_names[i]}"="${var_values[i]}"
-    done
-
-    setup="$1"
-    for i in "${!var_names[@]}"; do
-        setup=${setup}"_${var_names[i]}${var_values[i]}"
-    done
-    dirSetup="setups/$setup"
-    dirSetupOrig="setups.orig/$1"
-    dirOrig="$dirSetupOrig/0.orig"
-    dirConstant="$dirSetupOrig/constant"
-    dirSystem="$dirSetupOrig/system"
-
-    if [ ! -d "$dirSetup" ]
-    then
-        printf "# Create the setup: %s\n" "$setup"
-        mkdir -p "$dirSetup"
-        cp -aRfLp "setups.orig/common/." "$dirSetup/."
-        [ -d "$dirOrig" ] && cp -aRfLp "$dirOrig/." "$dirSetup/0.orig"
-        [ -d "$dirConstant" ] && cp -aRfLp "$dirConstant/." "$dirSetup/constant"
-        [ -d "$dirSystem" ] && cp -aRfLp "$dirSystem/." "$dirSetup/system"
-        chmod 755 -R ${dirSetup}/Allrun*
-
-        for i in "${!var_names[@]}"; do
-            find $dirSetup -type f -exec sed -i "s/{{${var_names[i]}}}/${var_values[i]}/g" {} +
-        done
-
-    else
-        printf "# Directory %s already exists - skipping!\n" "$dirSetup"
-    fi
-    done
-    exit
-}
-
-for setup in $setups
-do
-    dirSetupOrig="setups.orig/$setup"
-
-    if [ ! -d "$dirSetupOrig" ]
-    then
-        echo "Setup directory: $dirSetupOrig" \
-             "could not be found - skipping execution" 1>&2
-        continue
-    fi
-
-    dry_run_setup "$setup"
-done
+runApplication $(getApplication)
 
 #------------------------------------------------------------------------------

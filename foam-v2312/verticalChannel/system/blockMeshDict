@@ -21,14 +21,14 @@ cell_y 10;
 cell_z 1;
 
 
-s {{s}};
-b {{b}}; 
+s 0.1;
+b 1; 
 L #eval #{(1/$cell_x)*$b*10#}; //10
 
 
-n {{n}}; 
-a {{a}}; // #0.08 0.06 0.04 0.02 // In meter.
-phi {{phi}}; //in degrees 0->360
+n 3; 
+a 0; // #0.08 0.06 0.04 0.02 // In meter.
+phi 0; //in degrees 0->360
 
 l #eval #{$L/$n#}; //  #5/3 5/4 5/5 5/6 5/7 //must be a whole period compared to the length of the channel.
 
