@@ -16,8 +16,8 @@ FoamFile
 
 scale 1;
 
-cell_x 16;
-cell_y 80;
+cell_x 40;
+cell_y 200;
 cell_z 1;
 
 

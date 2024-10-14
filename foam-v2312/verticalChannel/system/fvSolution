@@ -43,6 +43,20 @@ solvers
         $U;
         relTol          0;
     }
+
+    T
+    {
+        solver          PBiCGStab;
+        preconditioner  DILU;
+        tolerance       1e-6;
+        relTol          0.1;
+    }
+
+    TFinal
+    {
+        $U;
+        relTol          0;
+    }
 }
 
 PIMPLE

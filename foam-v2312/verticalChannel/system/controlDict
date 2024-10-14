@@ -28,19 +28,19 @@ deltaT          0.01;
 
 writeControl    adjustableRunTime;
 
-writeInterval   1;
+writeInterval   0.01;
 
 purgeWrite      5;
 
 writeFormat     ascii;
 
-writePrecision  6;
+writePrecision  8;
 
 writeCompression off;
 
 timeFormat      general;
 
-timePrecision   6;
+timePrecision   8;
 
 runTimeModifiable true;
 
@@ -114,7 +114,7 @@ Tfield
 
     // Name of field to use when looking up schemes from fvSchemes
     // default = <field>
-    schemesField    U;
+    schemesField    T;
 
 
     // Diffusivity
@@ -137,10 +137,17 @@ Tfield
 
             codeInclude
             #{
+                #include "fvCFD.H"
             #};
 
             codeCorrect
             #{
+                Info<< "correcting the solution of T" << endl << "\n";
+                //const scalarField& V = mesh().V();
+                //const scalar Tb = gSum(T*V)/gSum(V);
+                //const scalar Tset = 2;
+                //const double frac = Tset/Tb;
+                //T = T*frac;
             #};
 
             codeConstrain
@@ -148,37 +155,95 @@ Tfield
                 Info<< "rescaling Teqn" << endl << "\n";
                 const scalarField& V = mesh().V();
                 volScalarField T = mesh().lookupObject<volScalarField>("T");
-                
+                //const surfaceScalarField& phi = mesh().lookupObject<surfaceScalarField>("phi");
+                //const volScalarField& psi = eqn.psi();
 
                 const scalar Tb = gSum(T*V)/gSum(V);
 
-                Info<< "first Tb:" << gSum(T*V)/gSum(V) << endl;
+                //Info<< "first Tb:" << gSum(T*V)/gSum(V) << endl;
 
-                const scalar Tset = 2;
-                const scalar frac = Tset/Tb;
+                const scalar Tset = 2.0;
+                const double frac = Tset/Tb;
+
+                Info << "frac:" << frac << endl;
+                //Info << eqn.diag() << "and" << eqn.source() << endl;
+                eqn.psi() *= frac;
+                eqn.source() *= frac;
+                //scalarField& diag = eqn.diag();
+
+                //eqn.setValues(cells_, T*frac); //fixedValueConstraint
+
+                //forAll(T, cellI)
+                //{
+                //    eqn.setValues([cellI], T[cellI]*frac);
+                //}
+                
+
+                //forAll(T, cellI)
+                //{
+                //    eqn.source()[cellI] *= frac; // rescaling the eqn
+                //}
+
+                //forAll(T, cellI)
+                //{
+                //    eqn.source()[cellI] += (frac*T[cellI]-T[cellI]); // rescaling the eqn
+                //}
 
                 
-                forAll(T, cellI)
-                {
-                    eqn.source()[cellI] += ((frac)*T[cellI]-T[cellI]); // Example adjustment
-                }
 
-                Info<< "second Tb:" << gSum(T*V)/gSum(V) << endl;
+                //Info<< "second Tb:" << gSum(T*V)/gSum(V) << endl;
                 //T.correct();
             #};
-
-            /*codeConstrain
-            #{
-                Info<< "CodeConstrain in T" << endl << "\n";
-            #};*/
-
             codeAddSup
             #{
                 Info << "not adding a Tsource" << endl;
             #};
         }
     }
+
 }
+
+fieldAverage1
+{
+    // Mandatory entries (unmodifiable)
+    type            fieldAverage;
+    libs            (fieldFunctionObjects);
+
+    // Mandatory entries (runtime modifiable)
+    fields
+    (
+        U
+        {
+            mean        yes;
+            prime2Mean  yes;
+            base        time;
+            //windowType   exact;
+            //window       10.0;
+            //windowName   <name>;
+            //allowRestart true;
+        }
+
+        T
+        {
+            mean        yes;
+            prime2Mean  yes;
+            base        time;
+       }
+    );
+
+    // Optional entries (runtime modifiable)
+    restartOnRestart    false;
+    restartOnOutput     false;
+
+    // Optional (inherited) entries
+    executeControl  timeStep;
+    executeInterval 1;
+    writeControl    $writeControl;
+    writeInterval   $writeInterval;
 }
+
+
+}
+
 
 // ************************************************************************* //

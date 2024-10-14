@@ -25,12 +25,13 @@ expressions
         {
             width 1;
             nu 1e-2;
-            Gr 71428.5;
+            Gr 14.2857;
         }
         
         expression
         #{
-            vector((((round(pos().y()) % 2)*2)-1)*10, ((-1*(pow(pos().x()/$[(scalar)constants.width],2)/2)+(2+1)*((pos().x())/6)) * $[(scalar)constants.Gr] * $[(scalar)constants.nu]) ,0)
+            vector(0, ((-1*(pow(pos().x()/$[(scalar)constants.width],2)/2)+(2+1)*((pos().x())/6)) * $[(scalar)constants.Gr] * $[(scalar)constants.nu]) ,0)
+            //(((round(pos().y()) % 2)*2)-1)*10
         #};
     }
 );

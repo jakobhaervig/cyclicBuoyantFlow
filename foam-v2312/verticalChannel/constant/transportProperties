@@ -19,4 +19,7 @@ transportModel Newtonian;
 // Laminar viscosity
 nu              1e-02;
 
+// Diffusion coefficient [m2/s]
+DT              0.001; //4e-05
+
 // ************************************************************************* //
