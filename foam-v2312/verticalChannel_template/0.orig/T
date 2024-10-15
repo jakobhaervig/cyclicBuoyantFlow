@@ -14,6 +14,8 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
+T_wall 3;
+
 dimensions      [0 0 0 1 0 0 0];
 
 internalField   uniform 1;
@@ -33,7 +35,7 @@ boundaryField
     walls
     {
         type            fixedValue;
-        value           uniform 3;
+        value           uniform $T_wall;
     }
 
     frontAndBack

@@ -10,16 +10,12 @@ FoamFile
     version     2.0;
     format      ascii;
     class       dictionary;
-    object      transportProperties;
+    object      decomposeParDict;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-transportModel Newtonian;
+numberOfSubdomains 2;
 
-// Laminar viscosity
-nu              1e-02;
-
-// Diffusion coefficient [m2/s]
-DT              0.001; //4e-05
+method scotch;
 
 // ************************************************************************* //
