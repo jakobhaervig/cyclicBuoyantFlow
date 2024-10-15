@@ -23,9 +23,9 @@ expressions
 
         constants
         {
-            width 1;
-            nu 1e-2;
-            Gr 14.2857;
+            width 1.0;
+            nu 0.01;
+            Gr 0.0;
         }
         
         expression
