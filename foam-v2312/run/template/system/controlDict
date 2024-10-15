@@ -48,6 +48,8 @@ adjustTimeStep  yes;
 
 maxCo           1;
 
+DT 0.001;
+
 libs
 (
     "libfieldFunctionObjects.so"
@@ -120,7 +122,7 @@ Tfield
     // Diffusivity
 
     // Fixed value diffusivity
-    D               0.001;
+    D               $DT;
 
     // Name of field to use as diffusivity, default = 'none'
     nut             none;

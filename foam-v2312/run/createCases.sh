@@ -1,6 +1,6 @@
 #!/bin/bash
 
-templateCase=verticalChannel_template
+templateCase=template
 # Name of file containing list of parameters to change and values
 parmScanFile=parameterMatrix
 # Prefix name of created numbered test cases
