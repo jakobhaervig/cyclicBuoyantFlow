@@ -1,3 +1,2 @@
-DT nu T_wall cell_x cell_y cell_z s b L numberOfSubdomains
-system/controlDict constant/transportProperties 0.orig/T system/blockMeshDict system/blockMeshDict system/blockMeshDict system/blockMeshDict system/blockMeshDict system/blockMeshDict system/decomposeParDict
-0.0142857 1e-02 3 40 200 1 0.1 1 5 2
+DT nu T_wall cell_x cell_y cell_z s b L numberOfSubdomains ux_mag
+0.0142857 1e-02 3 40 200 1 0.1 1 5 2 10

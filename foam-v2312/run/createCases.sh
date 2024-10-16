@@ -10,10 +10,9 @@ execScript=
 
 # Reading list of parameters to change
 parmNames=($(sed -n '1p' $parmScanFile))
-# For each parameter, which case file is it found in?
-parmFiles=($(sed -n '2p' $parmScanFile))
 # Length of list of new cases to be generated
-nCases=$(($(wc -l < $parmScanFile) - 2))
+nCases=$(($(wc -l < $parmScanFile)))
+echo "$nCases case(s) to be gererated"
 # Number of digits for padding numbers in new case names
 # nDigits=$(( ${#nCases} + 2 ))
 # Note: The above did not work as intended. If starting with 6 cases and then
@@ -25,7 +24,7 @@ nDigits=4
 for ((i=0; i<nCases; i++)); do
     caseNumber=$(printf "%0${nDigits}d" "$i")
     #Which line in parmScanFile specifies parameter values of current case 
-    parmLineNumber=$((i + 3))
+    parmLineNumber=$((i + 2))
     #Current case parameter values
     caseParms=($(sed -n ${parmLineNumber}p $parmScanFile))
     #Name of current case directory
@@ -47,12 +46,9 @@ for ((i=0; i<nCases; i++)); do
         for m in ${!parmNames[*]}
         do
             parmName=${parmNames[$m]}
-            parmFile=${parmFiles[$m]}
             parmValue=${caseParms[$m]}
+            echo "Setting $parmName to $parmValue"
             echo "$parmName $parmValue;">> $caseParmFile
-            foamDictionary -disableFunctionEntries -entry "${parmName}" -set "${parmValue}" ${caseName}/${parmFile} > /dev/null 2>&1
         done
-        echo >> $caseParmFile
-        cat $caseParmFile
     fi
 done
