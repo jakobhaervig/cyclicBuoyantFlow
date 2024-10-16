@@ -13,6 +13,10 @@ FoamFile
     object      setExprFieldsDict;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+#include "../parms"
+
+Gras #eval #{(-1*$g*$beta*($T_wall-$T_set)*pow($b,3))/(pow($nu,2))#};
+
 
 expressions
 (
@@ -23,15 +27,15 @@ expressions
 
         constants
         {
-            width 1.0;
-            nu 0.01;
-            Gr 0.0;
+            width $b;
+            nu $nu;
+            Gr $Gras;
+            Xvelmag $ux_mag;
         }
         
         expression
         #{
-            vector((((round(pos().y()) % 2)*2)-1)*10, ((-1*(pow(pos().x()/$[(scalar)constants.width],2)/2)+(2+1)*((pos().x())/6)) * $[(scalar)constants.Gr] * $[(scalar)constants.nu]) ,0)
-            //(((round(pos().y()) % 2)*2)-1)*10
+            vector((((round(pos().y()) % 2)*2)-1)*$[(scalar)constants.Xvelmag], ((-1*(pow(pos().x()/$[(scalar)constants.width],2)/2)+(2+1)*((pos().x())/6)) * $[(scalar)constants.Gr] * $[(scalar)constants.nu]) ,0)
         #};
     }
 );

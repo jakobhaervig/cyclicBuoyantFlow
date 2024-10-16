@@ -48,7 +48,7 @@ adjustTimeStep  yes;
 
 maxCo           1;
 
-DT 0.001;
+#include "../parms"
 
 libs
 (
@@ -145,11 +145,6 @@ Tfield
             codeCorrect
             #{
                 Info<< "correcting the solution of T" << endl << "\n";
-                //const scalarField& V = mesh().V();
-                //const scalar Tb = gSum(T*V)/gSum(V);
-                //const scalar Tset = 2;
-                //const double frac = Tset/Tb;
-                //T = T*frac;
             #};
 
             codeConstrain
@@ -157,44 +152,15 @@ Tfield
                 Info<< "rescaling Teqn" << endl << "\n";
                 const scalarField& V = mesh().V();
                 volScalarField T = mesh().lookupObject<volScalarField>("T");
-                //const surfaceScalarField& phi = mesh().lookupObject<surfaceScalarField>("phi");
-                //const volScalarField& psi = eqn.psi();
 
                 const scalar Tb = gSum(T*V)/gSum(V);
 
-                //Info<< "first Tb:" << gSum(T*V)/gSum(V) << endl;
-
-                const scalar Tset = 2.0;
+                const scalar Tset = mesh().time().controlDict().lookup("T_set")[0].number();
                 const double frac = Tset/Tb;
 
-                Info << "frac:" << frac << endl;
-                //Info << eqn.diag() << "and" << eqn.source() << endl;
                 eqn.psi() *= frac;
                 eqn.source() *= frac;
-                //scalarField& diag = eqn.diag();
 
-                //eqn.setValues(cells_, T*frac); //fixedValueConstraint
-
-                //forAll(T, cellI)
-                //{
-                //    eqn.setValues([cellI], T[cellI]*frac);
-                //}
-                
-
-                //forAll(T, cellI)
-                //{
-                //    eqn.source()[cellI] *= frac; // rescaling the eqn
-                //}
-
-                //forAll(T, cellI)
-                //{
-                //    eqn.source()[cellI] += (frac*T[cellI]-T[cellI]); // rescaling the eqn
-                //}
-
-                
-
-                //Info<< "second Tb:" << gSum(T*V)/gSum(V) << endl;
-                //T.correct();
             #};
             codeAddSup
             #{
@@ -219,10 +185,6 @@ fieldAverage1
             mean        yes;
             prime2Mean  yes;
             base        time;
-            //windowType   exact;
-            //window       10.0;
-            //windowName   <name>;
-            //allowRestart true;
         }
 
         T

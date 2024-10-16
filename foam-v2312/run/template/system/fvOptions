@@ -14,7 +14,7 @@ FoamFile
     object      fvOptions;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-T_ref 2;
+
 BoussinesqSource
 {
     type            vectorCodedSource;
@@ -40,36 +40,29 @@ BoussinesqSource
     #{
         Info << "Adding Boussinesq buoyancy source term" << endl;
 
-       // const dimensionedScalar T_w
-        //(
-        //  dimensionSet(0, 0, 0, 1, 0, 0, 0),
-        //    1.0
-        //);
-
         const dimensionedScalar T_ref
         (
             "T_ref",
             dimensionSet(0, 0, 0, 1, 0, 0, 0),
-            2.0
+            mesh().time().controlDict().lookup("T_ref")[0].number()
         );
 
         const dimensionedScalar beta
         (
             "beta",
             dimensionSet(0, 0, 0, -1, 0, 0, 0),
-            0.003
+            mesh().time().controlDict().lookup("beta")[0].number()
         );
 
         const dimensionedVector g
         (
             "g",
             dimensionSet(0, 1, -2, 0, 0, 0, 0),
-            vector(0, -0.47619, 0) //-2380.95 for Gr*0.7=50k
+            vector(0, mesh().time().controlDict().lookup("g")[0].number(), 0) 
         );
 
         const scalarField& V = mesh_.V();
 
-        //not sure, that is makes sence to couple it in this way.
         const volScalarField& Temp = mesh_.lookupObject<volScalarField>("T");
         const label wallsID = mesh_.boundaryMesh().findPatchID("walls");
         const scalarField& T_w = Temp.boundaryField()[wallsID];
@@ -79,10 +72,8 @@ BoussinesqSource
         forAll(V, i)
         {
             eqn.source()[i] += g.value()*beta.value()*(average(T_w) - Temp[i])*V[i];
-            //eqn.source()[i] += g.value()*beta.value()*(Temp[i] - Tref)*V[i]); // ??????!?!?
         }
-
-        //Info << "USource = " << eqn.dimensions() << endl;
+        
     #};
 }
 
