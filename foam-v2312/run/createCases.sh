@@ -43,14 +43,13 @@ for ((i=0; i<nCases; i++)); do
     else
         echo Creating case $caseName
         cp -r $templateCase $caseName
-        caseParmFile=$caseName/${caseName}_parms
-        echo -n "$caseName: " >> $caseParmFile
+        caseParmFile=$caseName/parms
         for m in ${!parmNames[*]}
         do
             parmName=${parmNames[$m]}
             parmFile=${parmFiles[$m]}
             parmValue=${caseParms[$m]}
-            echo -n "    $parmName: $parmValue" >> $caseParmFile
+            echo "$parmName $parmValue;">> $caseParmFile
             foamDictionary -disableFunctionEntries -entry "${parmName}" -set "${parmValue}" ${caseName}/${parmFile} > /dev/null 2>&1
         done
         echo >> $caseParmFile
