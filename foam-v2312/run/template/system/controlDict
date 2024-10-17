@@ -89,6 +89,37 @@ functions
         #};
     }
 
+    calc_dTdn
+    {
+        libs ( utilityFunctionObjects );
+        type coded;
+        name calc_dTdn;
+        enabled yes;
+
+        codeExecute
+        #{
+            const auto& T =
+                mesh().lookupObject<volScalarField>("T");
+
+            label patchID = mesh().boundaryMesh().findPatchID("walls");
+
+            dimensionedScalar dTdn
+            (
+                "dTdn",
+                dimensionSet(0, -1, 0, 1, 0, 0, 0),
+                gSum(T.boundaryField()[patchID].snGrad()*mesh().magSf().boundaryField()[patchID])/gSum(mesh().magSf().boundaryField()[patchID])
+            );
+              
+            if (Pstream::myProcNo() == 0)
+            {
+                std::ofstream out;
+                out.precision(8);
+                out.open("dTdn", std::ios::app);
+                out <<  mesh().time().timeName() << " " << dTdn.value() << "\n";
+            }
+        #};
+    }
+
 Tfield
 {
     type            scalarTransport;
