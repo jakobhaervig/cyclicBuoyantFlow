@@ -71,7 +71,7 @@ BoussinesqSource
 
         forAll(V, i)
         {
-            eqn.source()[i] += g.value()*beta.value()*(average(T_w) - Temp[i])*V[i];
+            eqn.source()[i] += g.value()*beta.value()*(average(T_w) - T_ref.value())*V[i];
         }
         
     #};
