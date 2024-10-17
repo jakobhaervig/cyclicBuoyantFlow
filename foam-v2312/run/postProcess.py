@@ -32,7 +32,7 @@ vars = load_variables(filename)
 Gr = -1*(vars["g"]*vars["beta"]*(vars["T_wall"]-vars["T_set"])*vars["b"]**3)/(vars["nu"]**2)
 Pr = vars["nu"]/vars["DT"]
 
-psi = np.genfromtxt(r'verticalChannel_0000\psi', delimiter=' ')
+psi = np.genfromtxt(r'verticalChannel_0000/psi', delimiter=' ')
 Psi = psi[:,1]*(vars['b']/vars["nu"])
 
 plt.xlabel('Time [s]')
