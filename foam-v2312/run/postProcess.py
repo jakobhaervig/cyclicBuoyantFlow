@@ -29,17 +29,17 @@ filename = 'verticalChannel_0000/parms'
 vars = load_variables(filename)
 
 #Calc Gr and Pr from vars
-Gr = -1*(vars["g"]*vars["beta"]*(vars["T_wall"]-vars["T_set"])*vars["b"]**3)/(vars["nu"]**2)
+Gr = -1*(vars["g"]*vars["beta"]*(vars["T_set"]-vars["T0"])*vars["b"]**3)/(vars["nu"]**2)
 Pr = vars["nu"]/vars["DT"]
 
-psi = np.genfromtxt(r'verticalChannel_0000/psi', delimiter=' ')
+psi = np.genfromtxt(r'verticalChannel_0001/psi', delimiter=' ')
 Psi = psi[:,1]*(vars['b']/vars["nu"])
 
 plt.xlabel('Time [s]')
 plt.ylabel(r'Dimensionless massflow $\Psi$')
 
-plt.plot(psi[:,0],Psi, label='non-constant source')
-plt.hlines((1/12*Gr), 0, 120, color='red', label='constant source (1/12Gr) Gr={0}'.format(Gr))
+plt.plot(psi[:,0],((Psi-1/12*Gr)/(1/12*Gr))*100, label='non-constant source')
+#plt.hlines((1/12*Gr), 0, psi[-1,0], color='red', label='constant source (1/12Gr) Gr={0}'.format(Gr))
 
 plt.grid('both')
 plt.legend()
