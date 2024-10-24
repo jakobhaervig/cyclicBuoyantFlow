@@ -47,11 +47,11 @@ for folder in cwd.iterdir():
             psi = psi[:min_length]
             dtdn = dtdn[:min_length]
 
-            plt.plot(t, psi*(vars['b']/vars["nu"]), label='{0}'.format(folder.name))
+            plt.semilogx(vars["nu"]**2/(vars["beta"]*np.abs(vars["g"])*vars["b"]*3*(vars["Tw"]-vars["Ts"])), (psi[-1]*(vars['b']/vars["nu"])/Gr), label='{0}'.format(folder.name), marker='o')
 
-plt.xlabel('Time (s)')
+#plt.xlabel('Time (s)')
 plt.ylabel(r'Dimensionless massflow $\Psi$')
-plt.hlines(1/12*Gr, 0, t[-1], color='black', label=r'Gr/12')
+#plt.hlines(1/12*Gr, 0, t[-1], color='black', label=r'Gr/12')
 plt.legend()
 plt.grid('both')
 plt.show()
