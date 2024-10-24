@@ -18,7 +18,7 @@ FoamFile
 
 dimensions      [0 0 0 1 0 0 0];
 
-internalField   uniform $T_set;
+internalField   uniform $Ts;
 
 boundaryField
 {
@@ -35,7 +35,7 @@ boundaryField
     walls
     {
         type            fixedValue;
-        value           uniform $T_wall;
+        value           uniform $Tw;
     }
 
     frontAndBack

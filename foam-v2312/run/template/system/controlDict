@@ -84,7 +84,7 @@ functions
                 std::ofstream out;
                 out.precision(8);
                 out.open("psi", std::ios::app);
-                out <<  mesh().time().timeName() << " " << psi.value() << "\n";
+                out << psi.value() << "\n";
             }
         #};
     }
@@ -115,7 +115,26 @@ functions
                 std::ofstream out;
                 out.precision(8);
                 out.open("dTdn", std::ios::app);
-                out <<  mesh().time().timeName() << " " << dTdn.value() << "\n";
+                out << dTdn.value() << "\n";
+            }
+        #};
+    }
+
+    calc_t
+    {
+        libs ( utilityFunctionObjects );
+        type coded;
+        name calc_t;
+        enabled yes;
+
+        codeExecute
+        #{
+            if (Pstream::myProcNo() == 0)
+            {
+                std::ofstream out;
+                out.precision(8);
+                out.open("t", std::ios::app);
+                out <<  mesh().time().timeName() << "\n";
             }
         #};
     }
@@ -187,8 +206,8 @@ Tfield
 
                 const scalar Tb = gSum(T*V*U.component(1))/gSum(V*U.component(1));
 
-                const scalar Tset = mesh().time().controlDict().lookup("T_set")[0].number();
-                const double frac = Tset/Tb;
+                const scalar Ts = mesh().time().controlDict().lookup("Ts")[0].number();
+                const double frac = Ts/Tb;
 
                 eqn.psi() *= frac;
                 eqn.source() *= frac;
