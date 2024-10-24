@@ -1,6 +1,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
-from pathlib import Path
+import pathlib
+import sys
 
 # Function to load variables from the file with semicolons
 def load_variables(filename):
@@ -26,27 +27,28 @@ def load_variables(filename):
     return variables
 
 # Load the variables from the file
-filename = 'verticalChannel_0000/parms'
-vars = load_variables(filename)
+prefix = 'verticalChannel_'
+cwd = pathlib.Path.cwd()
 
-#Calc Gr and Pr from vars
-Gr = np.abs(vars["g"])*vars["beta"]*(vars["Tw"]-vars["T0"])*vars["b"]**3/vars["nu"]**2
-Pr = vars["nu"]/vars["DT"]
+for folder in cwd.iterdir():
+    if folder.is_dir() and folder.name.startswith(prefix):
+        if folder / 'log.pimpleFoam' in folder.iterdir():
+            vars = folder / 'parms'
+            vars = load_variables(vars)
+            Gr = np.abs(vars["g"])*vars["beta"]*(vars["Tw"]-vars["T0"])*vars["b"]**3/vars["nu"]**2
+            Pr = vars["nu"]/vars["DT"]
+            t = np.loadtxt(folder / 't')
+            psi = np.loadtxt(folder / 'psi')
+            dtdn = np.loadtxt(folder / 'dtdn')
 
-print(Gr,Pr)
+            Psi = psi*(vars['b']/vars["nu"])
 
-t = np.loadtxt('verticalChannel_0000/t')
-psi = np.loadtxt('verticalChannel_0000/psi')
-dtdn = np.loadtxt('verticalChannel_0000/dtdn')
+            plt.xlabel('Time (s)')
+            plt.ylabel(r'Dimensionless massflow $\Psi$')
 
-Psi = psi*(vars['b']/vars["nu"])
+            plt.plot(t, (Psi-1/12*Gr)/(1/12*Gr)*100, label='{0}'.format(folder.name))
+            plt.hlines(0, 0, t[-1], color='black')
 
-plt.xlabel('Time [s]')
-plt.ylabel(r'Dimensionless massflow $\Psi$')
-
-plt.plot(t, (Psi-1/12*Gr)/(1/12*Gr)*100, label='non-constant source')
-plt.hlines(0, 0, t[-1], color='red', label='constant source (1/12Gr) Gr={0}'.format(Gr))
-
-plt.grid('both')
-plt.legend()
+            plt.grid('both')
+            plt.legend()
 plt.show()
