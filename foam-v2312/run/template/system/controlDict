@@ -183,8 +183,9 @@ Tfield
                 Info<< "rescaling Teqn" << endl << "\n";
                 const scalarField& V = mesh().V();
                 volScalarField T = mesh().lookupObject<volScalarField>("T");
+                volVectorField U = mesh().lookupObject<volVectorField>("U");
 
-                const scalar Tb = gSum(T*V)/gSum(V);
+                const scalar Tb = gSum(T*V*U.component(1))/gSum(V*U.component(1));
 
                 const scalar Tset = mesh().time().controlDict().lookup("T_set")[0].number();
                 const double frac = Tset/Tb;
