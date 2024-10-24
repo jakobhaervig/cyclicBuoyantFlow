@@ -41,6 +41,12 @@ for folder in cwd.iterdir():
             psi = np.loadtxt(folder / 'psi')
             dtdn = np.loadtxt(folder / 'dtdn')
 
+            # Slice t and psi to the same length
+            min_length = min(len(t), len(psi), len(dtdn))
+            t = t[:min_length]
+            psi = psi[:min_length]
+            dtdn = dtdn[:min_length]
+
             Psi = psi*(vars['b']/vars["nu"])
 
             plt.xlabel('Time (s)')
