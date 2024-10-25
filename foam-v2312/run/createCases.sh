@@ -47,7 +47,7 @@ for ((i=0; i<nCases; i++)); do
         do
             parmName=${parmNames[$m]}
             parmValue=${caseParms[$m]}
-            echo "Setting $parmName to $parmValue"
+            #echo "Setting $parmName to $parmValue"
             echo "$parmName $parmValue;">> $caseParmFile
         done
     fi

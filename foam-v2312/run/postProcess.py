@@ -33,6 +33,7 @@ cwd = pathlib.Path.cwd()
 for folder in cwd.iterdir():
     if folder.is_dir() and folder.name.startswith(prefix):
         if folder / 'log.pimpleFoam' in folder.iterdir():
+            print(folder)
             vars = folder / 'parms'
             vars = load_variables(vars)
             Gr = np.abs(vars["g"])*vars["beta"]*(vars["Tw"]-vars["T0"])*vars["b"]**3/vars["nu"]**2
@@ -47,8 +48,9 @@ for folder in cwd.iterdir():
             psi = psi[:min_length]
             dtdn = dtdn[:min_length]
 
-            plt.semilogx(vars["nu"]**2/(vars["beta"]*np.abs(vars["g"])*vars["b"]*3*(vars["Tw"]-vars["Ts"])), (psi[-1]*(vars['b']/vars["nu"])/Gr), label='{0}'.format(folder.name), marker='o')
+            plt.semilogx(vars["nu"]**2/(vars["beta"]*np.abs(vars["g"])*vars["b"]**3*np.abs(vars["Tw"]-vars["Ts"])), (psi[-1]*(vars['b']/vars["nu"])/Gr), label='{0}'.format(folder.name), marker='o')
 
+print('done')
 #plt.xlabel('Time (s)')
 plt.ylabel(r'Dimensionless massflow $\Psi$')
 #plt.hlines(1/12*Gr, 0, t[-1], color='black', label=r'Gr/12')

@@ -28,9 +28,9 @@ ux_mag=10
 
 # Get the variable to vary, its min, max, and number of steps from command line arguments
 variable_to_vary=Ts  # e.g., Ts, DT, nu, etc.
-min_value=0.01         # e.g., minimum value (logarithmic start)
-max_value=9.99         # e.g., maximum value (logarithmic end)
-num_steps=100         # e.g., number of steps
+min_value=0.00001         # e.g., minimum value (logarithmic start)
+max_value=9.999         # e.g., maximum value (logarithmic end)
+num_steps=50         # e.g., number of steps
 
 # If any argument is missing, show usage and exit
 if [ -z "$variable_to_vary" ] || [ -z "$min_value" ] || [ -z "$max_value" ] || [ -z "$num_steps" ]; then
