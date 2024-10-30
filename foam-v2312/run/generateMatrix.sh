@@ -28,9 +28,9 @@ ux_mag=10
 
 # Get the variable to vary, its min, max, and number of steps from command line arguments
 variable_to_vary=Ts  # e.g., Ts, DT, nu, etc.
-min_value=0.00001         # e.g., minimum value (logarithmic start)
+min_value=1         # e.g., minimum value (logarithmic start)
 max_value=9.999         # e.g., maximum value (logarithmic end)
-num_steps=50         # e.g., number of steps
+num_steps=20         # e.g., number of steps
 
 # If any argument is missing, show usage and exit
 if [ -z "$variable_to_vary" ] || [ -z "$min_value" ] || [ -z "$max_value" ] || [ -z "$num_steps" ]; then
@@ -46,7 +46,7 @@ log_values=$(awk -v min=$min_value -v max=$max_value -v steps=$num_steps 'BEGIN 
 }')
 
 # Write the header to the file
-echo "DT          nu          Ts         T0  beta        g       Tw  cell_x  cell_y  cell_z  s         b         L         n   a   phi     numberOfSubdomains  ux_mag" >> $output_file
+printf "DT          nu          Ts         T0  beta        g       Tw  cell_x  cell_y  cell_z  s         b         L         n   a   phi     numberOfSubdomains  ux_mag" >> $output_file
 
 # Loop through each logarithmic value and update the selected variable
 for value in $log_values; do
@@ -77,7 +77,7 @@ for value in $log_values; do
     esac
 
     # Write the line with updated values to the file (using float formatting)
-    printf "%-12.6e %-12.6e %-12.6f %-3d %-10.6e %-7.2f %-4.1f %-7.1f %-7.1f %-7.1f %-8.1f %-8.1f %-8.1f %-4d %-3.1f %-4.1f %-20d %-6.1f\n" \
+    printf "\n%-12.6e %-12.6e %-12.6f %-3d %-10.6e %-7.2f %-4.1f %-7.1f %-7.1f %-7.1f %-8.1f %-8.1f %-8.1f %-4d %-3.1f %-4.1f %-20d %-6.1f" \
         "$DT" "$nu" "$Ts" "$T0" "$beta" "$g" "$Tw" "$cell_x" "$cell_y" "$cell_z" "$s" "$b" "$L" "$n" "$a" "$phi" "$numberOfSubdomains" "$ux_mag" \
         >> $output_file
 done
