@@ -47,6 +47,13 @@ BoussinesqSource
             mesh().time().controlDict().lookup("T0")[0].number()
         );
 
+        const dimensionedScalar Ts
+        (
+            "Ts",
+            dimensionSet(0, 0, 0, 1, 0, 0, 0),
+            mesh().time().controlDict().lookup("Ts")[0].number()
+        );
+
         const dimensionedScalar beta
         (
             "beta",
@@ -65,7 +72,7 @@ BoussinesqSource
 
         const volScalarField& T = mesh_.lookupObject<volScalarField>("T");
         const label wallsID = mesh_.boundaryMesh().findPatchID("walls");
-        const scalarField& T_w = T.boundaryField()[wallsID];
+        const scalarField& Tw = T.boundaryField()[wallsID];
 
         const scalar Tb = gSum(T*V)/gSum(V);
 
