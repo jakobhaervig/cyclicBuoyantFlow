@@ -1,0 +1,87 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2312                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      fvOptions;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+BoussinesqSource
+{
+    type            vectorCodedSource;
+    selectionMode   all;
+    fields          ( U );
+    name            BoussinesqSource;
+
+    codeInclude
+    #{
+    #};
+
+    codeCorrect
+    #{
+        Info<< "CodeCorrect" << endl << "\n";
+    #};
+
+    codeConstrain
+    #{
+        Info<< "CodeConstrain" << endl << "\n";
+    #};
+
+    codeAddSup
+    #{
+        Info << "Adding Boussinesq buoyancy source term" << endl;
+
+        const dimensionedScalar T0
+        (
+            "T0",
+            dimensionSet(0, 0, 0, 1, 0, 0, 0),
+            mesh().time().controlDict().lookup("T0")[0].number()
+        );
+
+        const dimensionedScalar Ts
+        (
+            "Ts",
+            dimensionSet(0, 0, 0, 1, 0, 0, 0),
+            mesh().time().controlDict().lookup("Ts")[0].number()
+        );
+
+        const dimensionedScalar beta
+        (
+            "beta",
+            dimensionSet(0, 0, 0, -1, 0, 0, 0),
+            mesh().time().controlDict().lookup("beta")[0].number()
+        );
+
+        const dimensionedVector g
+        (
+            "g",
+            dimensionSet(0, 1, -2, 0, 0, 0, 0),
+            vector(0, mesh().time().controlDict().lookup("g")[0].number(), 0) 
+        );
+
+        const scalarField& V = mesh_.V();
+
+        const volScalarField& T = mesh_.lookupObject<volScalarField>("T");
+        const label wallsID = mesh_.boundaryMesh().findPatchID("walls");
+        const scalarField& Tw = T.boundaryField()[wallsID];
+
+        const scalar Tb = gSum(T*V)/gSum(V);
+
+        forAll(V, i)
+        {
+            eqn.source()[i] += g.value()*beta.value()*(T[i] - T0.value())*V[i];
+        }
+        
+    #};
+}
+
+// ************************************************************************* //

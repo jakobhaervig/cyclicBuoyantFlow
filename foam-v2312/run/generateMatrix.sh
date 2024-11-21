@@ -9,8 +9,8 @@ output_file="parameterMatrix"
 # Define constant values for the parameters (all as floats)
 DT=33.49e-6
 nu=22.97e-6
-Ts=10
-T0=0
+Ts=5
+T0=5
 beta=2.70e-3
 g=-9.81
 Tw=10
@@ -27,10 +27,10 @@ numberOfSubdomains=2
 ux_mag=10
 
 # Get the variable to vary, its min, max, and number of steps from command line arguments
-variable_to_vary=Ts  # e.g., Ts, DT, nu, etc.
+variable_to_vary=Tw  # e.g., Ts, DT, nu, etc.
 min_value=1         # e.g., minimum value (logarithmic start)
 max_value=9.999         # e.g., maximum value (logarithmic end)
-num_steps=20         # e.g., number of steps
+num_steps=10         # e.g., number of steps
 
 # If any argument is missing, show usage and exit
 if [ -z "$variable_to_vary" ] || [ -z "$min_value" ] || [ -z "$max_value" ] || [ -z "$num_steps" ]; then

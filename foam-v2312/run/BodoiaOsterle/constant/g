@@ -9,37 +9,15 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       volVectorField;
-    object      U;
+    class       dictionary;
+    object      g;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dimensions      [0 1 -1 0 0 0 0];
+#include "../parms"
 
-internalField   uniform (0 1e-6 0);
+dimensions     [0 1 -2 0 0 0 0];
 
-boundaryField
-{
-    top
-    {
-        type            cyclic;
-    }
-
-    bottom
-    {
-        type            cyclic;
-    }
-   
-    walls
-    {
-        type            noSlip;
-    }
-
-    frontAndBack
-    {
-        type            empty;
-    }
-}
-
+value          (0 $g 0);
 
 // ************************************************************************* //

@@ -9,33 +9,43 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       volVectorField;
-    object      U;
+    class       volScalarField;
+    object      T;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dimensions      [0 1 -1 0 0 0 0];
+#include "../parms"
 
-internalField   uniform (0 1e-6 0);
+dimensions      [0 0 0 1 0 0 0];
+
+internalField uniform $TRef;
 
 boundaryField
 {
     top
     {
-        type            cyclic;
+        type            inletOutlet;
+        inletValue      uniform $Tw;
     }
 
     bottom
     {
-        type            cyclic;
-    }
-   
-    walls
-    {
-        type            noSlip;
+        type            fixedValue;
+        value           uniform $TRef;
     }
 
-    frontAndBack
+    walls
+    {
+        type            fixedValue;
+        value           uniform $Tw;
+    }
+
+    unheatedWall
+    {
+        type            zeroGradient;
+    }
+
+    defaultFaces
     {
         type            empty;
     }

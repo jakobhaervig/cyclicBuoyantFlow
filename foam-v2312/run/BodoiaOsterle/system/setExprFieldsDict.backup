@@ -9,37 +9,36 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       volVectorField;
-    object      U;
+    class       dictionary;
+    object      setExprFieldsDict;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+#include "../parms"
 
-dimensions      [0 1 -1 0 0 0 0];
+Gras #eval #{(-1*$g*$beta*($T_wall-$T_set)*pow($b,3))/(pow($nu,2))#};
 
-internalField   uniform (0 1e-6 0);
 
-boundaryField
-{
-    top
+expressions
+(
+    U
     {
-        type            cyclic;
-    }
+        field       U;
+        dimensions  [0 1 -1 0 0 0 0];
 
-    bottom
-    {
-        type            cyclic;
+        constants
+        {
+            width $b;
+            nu $nu;
+            Gr $Gras;
+            Xvelmag $ux_mag;
+        }
+        
+        expression
+        #{
+            vector((((round(pos().y()) % 2)*2)-1)*$[(scalar)constants.Xvelmag], ((-1*(pow(pos().x()/$[(scalar)constants.width],2)/2)+(2+1)*((pos().x())/6)) * $[(scalar)constants.Gr] * $[(scalar)constants.nu]) ,0)
+        #};
     }
-   
-    walls
-    {
-        type            noSlip;
-    }
-
-    frontAndBack
-    {
-        type            empty;
-    }
-}
+);
 
 
 // ************************************************************************* //

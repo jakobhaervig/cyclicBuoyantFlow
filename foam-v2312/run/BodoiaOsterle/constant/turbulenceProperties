@@ -9,37 +9,11 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       volVectorField;
-    object      U;
+    class       dictionary;
+    object      turbulenceProperties;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-dimensions      [0 1 -1 0 0 0 0];
-
-internalField   uniform (0 1e-6 0);
-
-boundaryField
-{
-    top
-    {
-        type            cyclic;
-    }
-
-    bottom
-    {
-        type            cyclic;
-    }
-   
-    walls
-    {
-        type            noSlip;
-    }
-
-    frontAndBack
-    {
-        type            empty;
-    }
-}
-
+simulationType      laminar;
 
 // ************************************************************************* //

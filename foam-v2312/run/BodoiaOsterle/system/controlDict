@@ -1,0 +1,264 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2312                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+application     buoyantBoussinesqPimpleFoam;
+
+startFrom       latestTime;
+
+startTime       0;
+
+stopAt          endTime;
+
+endTime         1000;
+
+deltaT          0.01;
+
+writeControl    adjustableRunTime;
+
+writeInterval   10;
+
+purgeWrite      5;
+
+writeFormat     ascii;
+
+writePrecision  8;
+
+writeCompression off;
+
+timeFormat      general;
+
+timePrecision   8;
+
+runTimeModifiable true;
+
+adjustTimeStep  yes;
+
+maxCo           1;
+
+#include "../parms"
+
+libs
+(
+    "libfieldFunctionObjects.so"
+    "libUtilityFunctionObjects.so"
+);
+
+functions
+{
+    calc_psi
+    {
+        libs ( utilityFunctionObjects );
+        type coded;
+        name calc_psi;
+        enabled yes;
+
+        codeExecute
+        #{
+            const auto& vel =
+                mesh().lookupObject<volVectorField>("U");
+
+            label patchID = mesh().boundaryMesh().findPatchID("bottom");
+
+            dimensionedScalar psi
+            (
+                "psi",
+                dimensionSet(0, 2, -1, 1, 0, 0, 0),
+                gSum(vel.boundaryField()[patchID].component(1)*mesh().magSf().boundaryField()[patchID])/gSum(mesh().magSf().boundaryField()[patchID])
+            );
+              
+            if (Pstream::myProcNo() == 0)
+            {
+                std::ofstream out;
+                out.precision(8);
+                out.open("psi", std::ios::app);
+                out << psi.value() << "\n";
+            }
+        #};
+    }
+
+    calc_dTdn
+    {
+        libs ( utilityFunctionObjects );
+        type coded;
+        name calc_dTdn;
+        enabled yes;
+
+        codeExecute
+        #{
+            const auto& T =
+                mesh().lookupObject<volScalarField>("T");
+
+            label patchID = mesh().boundaryMesh().findPatchID("walls");
+
+            dimensionedScalar dTdn
+            (
+                "dTdn",
+                dimensionSet(0, -1, 0, 1, 0, 0, 0),
+                gSum(T.boundaryField()[patchID].snGrad()*mesh().magSf().boundaryField()[patchID])/gSum(mesh().magSf().boundaryField()[patchID])
+            );
+              
+            if (Pstream::myProcNo() == 0)
+            {
+                std::ofstream out;
+                out.precision(8);
+                out.open("dTdn", std::ios::app);
+                out << dTdn.value() << "\n";
+            }
+        #};
+    }
+
+    calc_t
+    {
+        libs ( utilityFunctionObjects );
+        type coded;
+        name calc_t;
+        enabled yes;
+
+        codeExecute
+        #{
+            if (Pstream::myProcNo() == 0)
+            {
+                std::ofstream out;
+                out.precision(8);
+                out.open("t", std::ios::app);
+                out <<  mesh().time().timeName() << "\n";
+            }
+        #};
+    }
+
+// Tfield
+// {
+//     type            scalarTransport;
+//     libs            ("libsolverFunctionObjects.so");
+//     writeControl    $writeControl;
+//     writeInterval   $writeInterval;
+
+
+//     // Optional entries
+
+//     // Name of scalar field to transport, default = 's'
+//     field           T;
+
+//     // Name of flux field, default = 'phi'
+//     phi             phi;
+
+//     // Name of density field for compressible cases, default = 'rho'
+//     rho             rho;
+
+//     // Name of phase field to constrain scalar to, default = 'none'
+//     phase           none;
+
+//     // Set the scalar to zero on start/re-start
+//     resetOnStartUp  no;
+
+//     // Name of field to use when looking up schemes from fvSchemes
+//     // default = <field>
+//     schemesField    T;
+
+
+//     // Diffusivity
+
+//     // Fixed value diffusivity
+//     D               $DT;
+
+//     // Name of field to use as diffusivity, default = 'none'
+//     nut             none;
+
+//     // Run-time selectable sources
+//     fvOptions
+//     {
+//         Tcorrect
+//         {
+//             type            scalarCodedSource;
+//             selectionMode   all;
+//             fields          ( T );
+//             name            Tcorrect;
+
+//             codeInclude
+//             #{
+//                 #include "fvCFD.H"
+//             #};
+
+//             codeCorrect
+//             #{
+//                 Info<< "correcting the solution of T" << endl << "\n";
+//             #};
+
+//             codeConstrain
+//             #{
+//                 Info<< "rescaling Teqn" << endl << "\n";
+//                 const scalarField& V = mesh().V();
+//                 volScalarField T = mesh().lookupObject<volScalarField>("T");
+//                 volVectorField U = mesh().lookupObject<volVectorField>("U");
+
+//                 const scalar Tb = gSum(T*V*U.component(1))/gSum(V*U.component(1));
+
+//                 const scalar Ts = mesh().time().controlDict().lookup("Ts")[0].number();
+//                 const double frac = Ts/Tb;
+
+//                 eqn.psi() *= frac;
+//                 eqn.source() *= frac;
+
+//             #};
+//             codeAddSup
+//             #{
+//                 Info << "not adding a Tsource" << endl;
+//             #};
+//         }
+//     }
+
+// }
+
+// fieldAverage1
+// {
+//     // Mandatory entries (unmodifiable)
+//     type            fieldAverage;
+//     libs            (fieldFunctionObjects);
+
+//     // Mandatory entries (runtime modifiable)
+//     fields
+//     (
+//         U
+//         {
+//             mean        yes;
+//             prime2Mean  yes;
+//             base        time;
+//         }
+
+//         T
+//         {
+//             mean        yes;
+//             prime2Mean  yes;
+//             base        time;
+//        }
+//     );
+
+//     // Optional entries (runtime modifiable)
+//     restartOnRestart    false;
+//     restartOnOutput     false;
+
+//     // Optional (inherited) entries
+//     executeControl  timeStep;
+//     executeInterval 1;
+//     writeControl    $writeControl;
+//     writeInterval   $writeInterval;
+// }
+
+
+}
+
+
+// ************************************************************************* //

@@ -16,18 +16,19 @@ FoamFile
 
 dimensions      [0 1 -1 0 0 0 0];
 
-internalField   uniform (0 1e-6 0);
+internalField   uniform (0 0 0);
 
 boundaryField
 {
     top
     {
-        type            cyclic;
+        type            inletOutlet;
+        inletValue           uniform (0 0 0);
     }
 
     bottom
     {
-        type            cyclic;
+        type            zeroGradient;
     }
    
     walls
@@ -35,7 +36,12 @@ boundaryField
         type            noSlip;
     }
 
-    frontAndBack
+    unheatedWall
+    {
+        type            zeroGradient;
+    }
+
+    defaultFaces
     {
         type            empty;
     }

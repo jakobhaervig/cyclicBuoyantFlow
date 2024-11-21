@@ -1,0 +1,8 @@
+nu 1.5e-05;
+TRef 300;
+beta 3e-03;
+Prt 0.850000;
+g -9.81;
+Pr 0.7;
+Tw 350;
+numberOfSubdomains 2;
